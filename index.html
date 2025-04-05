@@ -2,79 +2,113 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>PG Expense Calculator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PG Cost Calculator</title>
   <style>
-    body { font-family: Arial, sans-serif; padding: 2rem; background: #f4f4f4; }
-    h1 { color: #333; }
-    label, input, select { display: block; margin: 1rem 0; }
-    input[type='range'] { width: 100%; }
-    .result { background: #fff; padding: 1rem; border-radius: 5px; margin-top: 2rem; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-    .result span { font-weight: bold; }
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    label, input, select {
+      display: block;
+      margin: 10px 0;
+    }
+    .section {
+      background: white;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    }
+    .result {
+      font-weight: bold;
+      margin-top: 10px;
+    }
   </style>
 </head>
 <body>
-  <h1>PG Monthly Cost Calculator</h1>
+  <h1>PG Cost Calculator</h1>
 
-  <label>Total PG Members:
+  <div class="section">
+    <label for="members">Number of PG Members:</label>
     <input type="number" id="members" value="80">
-  </label>
 
-  <label>Monthly Food & Utility Cost (₹):
-    <input type="number" id="baseCost" value="197500">
-  </label>
+    <label for="incomePerMember">Income per Member (₹):</label>
+    <input type="number" id="incomePerMember" value="9000">
+  </div>
 
-  <label>Rent (₹):
-    <select id="rent">
-      <option value="150000">₹1,50,000 - Budget Area</option>
-      <option value="200000" selected>₹2,00,000 - Mid-Range Area</option>
-      <option value="250000">₹2,50,000 - Prime Area</option>
-    </select>
-  </label>
+  <div class="section">
+    <h2>Monthly Costs</h2>
+    <label>Rent (₹): <input type="number" id="rent" value="250000"></label>
+    <label>Gas (₹): <input type="number" id="gas" value="11000"></label>
+    <label>Electricity (₹): <input type="number" id="electricity" value="18000"></label>
+    <label>Wifi (₹): <input type="number" id="wifi" value="3000"></label>
+    <label>Water Tanker + Bill (₹): <input type="number" id="water" value="5000"></label>
+    <label>Cleaner Staff (₹): <input type="number" id="cleaner" value="18000"></label>
+  </div>
 
-  <label>Profit per Person (₹): <span id="profitDisplay">₹1000</span>
-    <input type="range" id="profit" min="0" max="2000" value="1000" step="100">
-  </label>
+  <div class="section">
+    <h2>Food Items</h2>
+    <label>Rice (₹): <input type="number" id="rice" value="13000"></label>
+    <label>Dal (₹): <input type="number" id="dal" value="10000"></label>
+    <label>Wheat Flour (₹): <input type="number" id="flour" value="7000"></label>
+    <label>Oil (₹): <input type="number" id="oil" value="9000"></label>
+    <label>Vegetables (₹): <input type="number" id="vegetables" value="28000"></label>
+    <label>Milk/Curd (₹): <input type="number" id="milk" value="19000"></label>
+    <label>Spices + Others (₹): <input type="number" id="spices" value="10000"></label>
+  </div>
 
-  <div class="result">
-    <p>Total Monthly Cost: <span id="totalCost">₹0</span></p>
-    <p>Cost per Member (without profit): <span id="costPerMember">₹0</span></p>
-    <p>Final Price per Member (with profit): <span id="finalPrice">₹0</span></p>
+  <div class="section">
+    <label for="profitMargin">Profit Margin (%):</label>
+    <input type="range" id="profitMargin" min="0" max="50" value="15">
+    <span id="profitLabel">15%</span>
+  </div>
+
+  <div class="section">
+    <button onclick="calculateTotal()">Calculate</button>
+    <div id="results" class="result"></div>
   </div>
 
   <script>
-    const membersInput = document.getElementById("members");
-    const baseCostInput = document.getElementById("baseCost");
-    const rentSelect = document.getElementById("rent");
-    const profitRange = document.getElementById("profit");
-    const profitDisplay = document.getElementById("profitDisplay");
+    document.getElementById('profitMargin').addEventListener('input', function() {
+      document.getElementById('profitLabel').textContent = this.value + '%';
+    });
 
-    const totalCostEl = document.getElementById("totalCost");
-    const costPerMemberEl = document.getElementById("costPerMember");
-    const finalPriceEl = document.getElementById("finalPrice");
-
-    function updateCalculator() {
-      const members = parseInt(membersInput.value) || 1;
-      const baseCost = parseInt(baseCostInput.value) || 0;
-      const rent = parseInt(rentSelect.value) || 0;
-      const profit = parseInt(profitRange.value) || 0;
-
-      profitDisplay.innerText = `₹${profit}`;
-
-      const totalCost = baseCost + rent;
-      const perMember = Math.ceil(totalCost / members);
-      const finalPrice = perMember + profit;
-
-      totalCostEl.innerText = `₹${totalCost.toLocaleString()}`;
-      costPerMemberEl.innerText = `₹${perMember.toLocaleString()}`;
-      finalPriceEl.innerText = `₹${finalPrice.toLocaleString()}`;
+    function getNumber(id) {
+      return parseFloat(document.getElementById(id).value) || 0;
     }
 
-    membersInput.addEventListener("input", updateCalculator);
-    baseCostInput.addEventListener("input", updateCalculator);
-    rentSelect.addEventListener("change", updateCalculator);
-    profitRange.addEventListener("input", updateCalculator);
+    function calculateTotal() {
+      const members = getNumber('members');
+      const incomePerMember = getNumber('incomePerMember');
 
-    updateCalculator();
+      const costs = [
+        'rent', 'gas', 'electricity', 'wifi', 'water', 'cleaner',
+        'rice', 'dal', 'flour', 'oil', 'vegetables', 'milk', 'spices'
+      ];
+
+      let baseCost = costs.reduce((sum, id) => sum + getNumber(id), 0);
+      let profitMargin = getNumber('profitMargin') / 100;
+      let profitAmount = baseCost * profitMargin;
+      let totalCostWithProfit = baseCost + profitAmount;
+      let costPerMember = baseCost / members;
+      let costPerMemberWithProfit = totalCostWithProfit / members;
+
+      let totalIncome = members * incomePerMember;
+      let finalProfit = totalIncome - baseCost;
+
+      document.getElementById('results').innerHTML = `
+        Total Expense (without Profit): ₹${baseCost.toFixed(2)}<br>
+        Profit Margin: ${profitMargin * 100}%<br>
+        Profit Amount (on cost): ₹${profitAmount.toFixed(2)}<br>
+        Total Expense (incl. Profit): ₹${totalCostWithProfit.toFixed(2)}<br>
+        Cost per Member (without Profit): ₹${costPerMember.toFixed(2)}<br>
+        Cost per Member (with Profit): ₹${costPerMemberWithProfit.toFixed(2)}<br>
+        Total Income from Members: ₹${totalIncome.toFixed(2)}<br>
+        Final Profit (Income - Cost): ₹${finalProfit.toFixed(2)}
+      `;
+    }
   </script>
 </body>
 </html>
